@@ -15,7 +15,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.util.Date
+import com.google.gson.Gson
+import java.text.SimpleDateFormat
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var btnCreateAccount: Button
@@ -50,6 +53,11 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
         }
     }
+    private fun getDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX")
+        val date = Date()
+        return dateFormat.format(date)
+    }
 
     private fun registerUser() {
         val api = retrofit.create(UsuarioAPI::class.java)
@@ -60,7 +68,8 @@ class RegisterActivity : AppCompatActivity() {
             tipoDocumento = 1,
             numDocumento = tilCNPJ.editText?.text.toString(),
             telefone = tilPhone.editText?.text.toString(),
-            dataCriacao = Date(),
+            // Date now
+            dataCriacao = getDate(),
             status = 0
         )
 
@@ -75,6 +84,7 @@ class RegisterActivity : AppCompatActivity() {
                         finish()
                     } else {
                         Log.e("RegisterActivityError", response.body().toString())
+                        Log.d("RegisterActivityError", Gson().toJson(usuario))
                         Toast.makeText(this@RegisterActivity, "Erro ao cadastrar usuário: ${response.body().toString()}", Toast.LENGTH_SHORT).show()
                     }
                 }

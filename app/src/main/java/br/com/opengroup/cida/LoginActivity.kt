@@ -3,6 +3,7 @@ package br.com.opengroup.cida
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -29,6 +30,8 @@ class LoginActivity : AppCompatActivity() {
 
         btnEnter = findViewById(R.id.btnEnter)
         tvCreateAccount = findViewById(R.id.tvCreateAccount)
+        tilEmail = findViewById(R.id.tilEmail)
+        tilPassword = findViewById(R.id.tilPassword)
 
         btnEnter.setOnClickListener {
             loginUser()
@@ -51,16 +54,19 @@ class LoginActivity : AppCompatActivity() {
                 val response = api.autenticarUsuario(login)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
+                        Log.d("LoginActivityLogin", "Usuario logado com sucesso!")
                         Toast.makeText(this@LoginActivity, "Usuário logado com sucesso!", Toast.LENGTH_SHORT).show()
                         // Navigate to login or main activity
                         startActivity(Intent(this@LoginActivity, UploadActivity::class.java))
                         finish()
                     } else {
+                        Log.e("LoginActivityLogin", "Erro ao logar usuário: ${response.message()}")
                         Toast.makeText(this@LoginActivity, "Erro ao logar usuário: ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    Log.e("LoginActivityLogin", "Erro de conexão: ${e.message}")
                     Toast.makeText(this@LoginActivity, "Erro de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
