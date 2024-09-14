@@ -10,6 +10,8 @@ class MainActivity: AppCompatActivity() {
     private lateinit var btnCreateAccount: Button
     private lateinit var tvLogin: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
         btnCreateAccount = findViewById(R.id.btnCreateAccount)
         tvLogin = findViewById(R.id.tvLogin)
@@ -21,7 +23,5 @@ class MainActivity: AppCompatActivity() {
             startActivity(Intent(this, LoginActivity::class.java))
         }
 
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
     }
 }

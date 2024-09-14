@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 class UploadActivity: AppCompatActivity() {
     private lateinit var btnSendDocuments: Button
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_upload)
 
         btnSendDocuments = findViewById(R.id.btnSendDocuments)
 
@@ -15,7 +17,5 @@ class UploadActivity: AppCompatActivity() {
             startActivity(Intent(this, DashboardActivity::class.java))
         }
 
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_upload)
     }
 }
