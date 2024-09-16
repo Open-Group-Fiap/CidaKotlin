@@ -46,12 +46,32 @@ class RegisterActivity : AppCompatActivity() {
         tilConfirmPassword = findViewById(R.id.tilConfirmPassword)
 
         btnCreateAccount.setOnClickListener {
-            registerUser()
+            if(validateInputs())
+                registerUser()
         }
 
         tvLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
+    }
+    fun validateInputs(): Boolean {
+        if(tilEmail.editText?.text.toString().isEmpty())
+            Toast.makeText(this, "Email não pode ser vazio!", Toast.LENGTH_SHORT).show()
+        else if(tilPassword.editText?.text.toString().isEmpty())
+            Toast.makeText(this, "Senha não pode ser vazia!", Toast.LENGTH_SHORT).show()
+        else if(tilConfirmPassword.editText?.text.toString().isEmpty())
+            Toast.makeText(this, "Confirmar senha não pode ser vazia!", Toast.LENGTH_SHORT).show()
+        else if(tilPassword.editText?.text.toString() != tilConfirmPassword.editText?.text.toString())
+            Toast.makeText(this, "Senhas não coincidem!", Toast.LENGTH_SHORT).show()
+        else if(tilCNPJ.editText?.text.toString().isEmpty())
+            Toast.makeText(this, "CNPJ não pode ser vazio!", Toast.LENGTH_SHORT).show()
+        else if(tilCompanyName.editText?.text.toString().isEmpty())
+            Toast.makeText(this, "Nome da empresa não pode ser vazio!", Toast.LENGTH_SHORT).show()
+        else if(tilPhone.editText?.text.toString().isEmpty())
+            Toast.makeText(this, "Telefone não pode ser vazio!", Toast.LENGTH_SHORT).show()
+        else
+            return true
+        return false
     }
     private fun getDate(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX")

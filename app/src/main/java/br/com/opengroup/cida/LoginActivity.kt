@@ -34,14 +34,23 @@ class LoginActivity : AppCompatActivity() {
         tilPassword = findViewById(R.id.tilPassword)
 
         btnEnter.setOnClickListener {
-            loginUser()
+            if(validateInputs())
+                loginUser()
         }
         tvCreateAccount.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
     }
-
+    fun validateInputs(): Boolean {
+        if(tilEmail.editText?.text.toString().isEmpty())
+            Toast.makeText(this, "Email não pode ser vazio!", Toast.LENGTH_SHORT).show()
+        else if(tilPassword.editText?.text.toString().isEmpty())
+            Toast.makeText(this, "Senha não pode ser vazia!", Toast.LENGTH_SHORT).show()
+        else
+            return true
+        return false
+    }
     private fun loginUser() {
         val api = retrofit.create(UsuarioAPI::class.java)
         val login = Login(
