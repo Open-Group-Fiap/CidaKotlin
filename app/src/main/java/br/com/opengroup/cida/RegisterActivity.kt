@@ -103,9 +103,10 @@ class RegisterActivity : AppCompatActivity() {
                         startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
                         finish()
                     } else {
-                        Log.e("RegisterActivityError", response.body().toString())
+                        val error = response.errorBody()!!.string()
+                        Log.e("RegisterActivityError", error)
                         Log.d("RegisterActivityError", Gson().toJson(usuario))
-                        Toast.makeText(this@RegisterActivity, "Erro ao cadastrar usuário: ${response.body().toString()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@RegisterActivity, "Erro ao cadastrar usuário: ${error}", Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {
