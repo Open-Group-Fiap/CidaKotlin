@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "648715123749",
+    "project_id": "cida-op",
+    "storage_bucket": "cida-op.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:648715123749:android:450dced6ab0bbaade6d3cc",
+        "android_client_info": {
+          "package_name": "br.com.opengroup.cida"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBJaE46YMatxiL60o4gnDnjxJAjFZ_0Bc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
