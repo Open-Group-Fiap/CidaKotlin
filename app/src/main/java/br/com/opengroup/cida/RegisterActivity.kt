@@ -9,13 +9,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.opengroup.cida.api.RetrofitHelper
 import br.com.opengroup.cida.api.UsuarioAPI
-import br.com.opengroup.cida.model.Usuario
+import br.com.opengroup.cida.model.UsuarioRequest
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import java.util.Date
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
@@ -81,7 +80,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun registerUser() {
         val api = retrofit.create(UsuarioAPI::class.java)
-        val usuario = Usuario(
+        val usuarioRequest = UsuarioRequest(
             email = tilEmail.editText?.text.toString(),
             senha = tilPassword.editText?.text.toString(),
             nome = tilCompanyName.editText?.text.toString(),
@@ -95,7 +94,7 @@ class RegisterActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = api.cadastrarUsuario(usuario)
+                val response = api.cadastrarUsuario(usuarioRequest)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         Toast.makeText(this@RegisterActivity, "Usuário cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
@@ -105,13 +104,17 @@ class RegisterActivity : AppCompatActivity() {
                     } else {
                         val error = response.errorBody()!!.string()
                         Log.e("RegisterActivityError", error)
-                        Log.d("RegisterActivityError", Gson().toJson(usuario))
+                        Log.d("RegisterActivityError", Gson().toJson(usuarioRequest))
                         Toast.makeText(this@RegisterActivity, "Erro ao cadastrar usuário: ${error}", Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Log.e("RegisterActivityError", e.message.toString())
+                    if (e.message.toString().contains("timeout")) {
+                        Toast.makeText(this@RegisterActivity, "Cold boot do servidor, tente novamente", Toast.LENGTH_SHORT).show()
+                        return@withContext;
+                    }
                     Toast.makeText(this@RegisterActivity, "Erro de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }

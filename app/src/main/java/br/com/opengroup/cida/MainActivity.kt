@@ -5,10 +5,17 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import br.com.opengroup.cida.api.BootApi
+import br.com.opengroup.cida.api.RetrofitHelper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity: AppCompatActivity() {
     private lateinit var btnCreateAccount: Button
     private lateinit var tvLogin: TextView
+    private val retrofit by lazy { RetrofitHelper.retrofit }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -21,6 +28,9 @@ class MainActivity: AppCompatActivity() {
         }
         tvLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            val boot = retrofit.create(BootApi::class.java).boot()
         }
 
     }

@@ -10,13 +10,10 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class DashboardActivity: AppCompatActivity() {
-    private val retrofit by lazy { RetrofitHelper.retrofit }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
-        CoroutineScope(Dispatchers.IO).launch {
-            val boot = retrofit.create(BootApi::class.java).boot()
-        }
+
     }
 }

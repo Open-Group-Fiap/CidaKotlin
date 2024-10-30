@@ -1,5 +1,6 @@
 package br.com.opengroup.cida
 
+import DatabaseHelper
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var tvCreateAccount: TextView
     private lateinit var tilEmail: TextInputLayout
     private lateinit var tilPassword: TextInputLayout
+    private var credentials: Pair<Int, Pair<String, String>>? = null
     private val retrofit by lazy { RetrofitHelper.retrofit }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,8 +43,13 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
+        credentials = DatabaseHelper(this).selectCredenciais()
+        if(credentials != null) {
+            startActivity(Intent(this, UploadActivity::class.java))
+        }
+
     }
-    fun validateInputs(): Boolean {
+    private fun validateInputs(): Boolean {
         if(tilEmail.editText?.text.toString().isEmpty())
             Toast.makeText(this, "Email não pode ser vazio!", Toast.LENGTH_SHORT).show()
         else if(tilPassword.editText?.text.toString().isEmpty())
@@ -64,8 +71,10 @@ class LoginActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         Log.d("LoginActivityLogin", "Usuario logado com sucesso!")
-                        Toast.makeText(this@LoginActivity, "Usuário logado com sucesso!", Toast.LENGTH_SHORT).show()
-                        // Navigate to login or main activity
+                        Toast.makeText(this@LoginActivity, "Usuário logado com sucesso! Aguarde...", Toast.LENGTH_SHORT).show()
+                        val usuarioResponseResponse = api.consultarUsuario(login.email)
+                        val idUsuario = usuarioResponseResponse.body()!!.idUsuario
+                        DatabaseHelper(this@LoginActivity).updateCredenciais(idUsuario, login.email, login.senha)
                         startActivity(Intent(this@LoginActivity, UploadActivity::class.java))
                         finish()
                     } else {
