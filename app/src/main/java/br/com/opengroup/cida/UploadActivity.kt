@@ -74,10 +74,30 @@ class UploadActivity: AppCompatActivity() {
     }
     private fun uriToFilePart(uri: Uri): MultipartBody.Part? {
         val file = uriToFile(uri) ?: return null
-        val requestBody = RequestBody.create(MediaType.parse("application/octet-stream"), file)
-        return MultipartBody.Part.createFormData("files", file.name, requestBody)
+        val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
+
+        val requestBody = RequestBody.create(MediaType.parse(mimeType), file)
+        val originalFileName = getOriginalFileName(uri) // Use the updated method here
+        Log.d("UploadActivity", "Prepared file: ${file.name} with MIME type: $mimeType and original name: $originalFileName")
+        return MultipartBody.Part.createFormData("files", originalFileName, requestBody)
     }
 
+    private fun getOriginalFileName(uri: Uri): String {
+        var fileName = "file_${System.currentTimeMillis()}" // Default name if all else fails
+
+        // Query the file name from the content resolver
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val nameIndex = it.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    fileName = it.getString(nameIndex)
+                }
+            }
+        }
+        Log.d("UploadActivity", "Original file name: $fileName")
+        return fileName
+    }
     private fun uriToFile(uri: Uri): File? {
         val inputStream = contentResolver.openInputStream(uri) ?: return null
         val file = File(cacheDir, uri.lastPathSegment ?: "tempFile")
@@ -105,6 +125,11 @@ class UploadActivity: AppCompatActivity() {
             try {
                 val response = api.uploadArquivo(userId, selectedFileParts)
                 Log.d("UploadActivity", "Response: $response")
+                Log.d("UploadActivity", "Response Message: ${response.errorBody()?.string()}")
+                selectedFileParts.forEach { part ->
+                    val fileName = part.headers()?.get("Content-Disposition")?.split("filename=")?.getOrNull(1)?.replace("\"", "")
+                    Log.d("UploadActivity", "Uploading file: $fileName, Size: ${part.body().contentLength()} bytes")
+                }
                 if (response.isSuccessful) {
                     runOnUiThread { Toast.makeText(this@UploadActivity, "Files uploaded successfully", Toast.LENGTH_SHORT).show() }
                 } else {
