@@ -123,7 +123,7 @@ class UploadActivity: AppCompatActivity() {
         // Make the upload call using Coroutines
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = api.uploadArquivo(userId, selectedFileParts)
+                val response = api.upldoadArquivo(userId, selectedFileParts)
                 Log.d("UploadActivity", "Response: $response")
                 Log.d("UploadActivity", "Response Message: ${response.errorBody()?.string()}")
                 selectedFileParts.forEach { part ->
