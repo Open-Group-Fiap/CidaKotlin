@@ -67,12 +67,14 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/btnUpload"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@android:drawable/ic_menu_upload"
                 android:tint="#4285F4" />
 
             <TextView
+                android:id="@+id/txtUpload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -83,65 +85,6 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="24dp"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cvUploadArea" />
-
-    <TextView
-        android:id="@+id/tvOr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:padding="8dp"
-        android:text="OR"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@id/divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/divider" />
-
-    <TextView
-        android:id="@+id/tvUploadByUrl"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Upload por URL"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider" />
-
-    <EditText
-        android:id="@+id/etUrl"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:hint="https://sharefile.xyz/file.jpg"
-        android:inputType="textUri"
-        app:layout_constraintEnd_toStartOf="@id/btnUrlUpload"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvUploadByUrl" />
-
-    <Button
-        android:id="@+id/btnUrlUpload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#E0E0E0"
-        android:text="Upload"
-        android:textAllCaps="false"
-        android:textColor="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="@id/etUrl"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/etUrl" />
 
     <Button
         android:id="@+id/btnSendDocuments"
