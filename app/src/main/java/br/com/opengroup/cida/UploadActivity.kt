@@ -6,8 +6,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +18,7 @@ import br.com.opengroup.cida.api.RetrofitHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -26,25 +29,60 @@ class UploadActivity: AppCompatActivity() {
     private lateinit var btnSendDocuments: Button
     private lateinit var btnUpload: ImageView
     private lateinit var txtUpload: TextView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var txtUploadStatus: TextView
+
     private val PICK_FILES_REQUEST_CODE = 100
     private var selectedFileParts: List<MultipartBody.Part> = listOf()
     private val retrofit by lazy { RetrofitHelper.retrofit }
     private var credentials: Pair<Int, Pair<String, String>>? = null
+    private var isUploading = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_upload)
 
+        initializeViews()
+        setupClickListeners()
+    }
+
+    private fun initializeViews() {
         btnSendDocuments = findViewById(R.id.btnSendDocuments)
         btnUpload = findViewById(R.id.btnUpload)
         txtUpload = findViewById(R.id.txtUpload)
+        progressBar = findViewById(R.id.progressBar)
+        txtUploadStatus = findViewById(R.id.txtUploadStatus)
 
-        txtUpload.setOnClickListener { openFilePicker() }
-        btnUpload.setOnClickListener { openFilePicker() }
-
-        btnSendDocuments.setOnClickListener { sendFiles() }
-
+        // Initially hide loading elements
+        progressBar.visibility = View.GONE
+        txtUploadStatus.visibility = View.GONE
     }
+
+    private fun setupClickListeners() {
+        txtUpload.setOnClickListener { if (!isUploading) openFilePicker() }
+        btnUpload.setOnClickListener { if (!isUploading) openFilePicker() }
+        btnSendDocuments.setOnClickListener { if (!isUploading) sendFiles() }
+    }
+
+    private fun showLoading(show: Boolean) {
+        isUploading = show
+        runOnUiThread {
+            progressBar.visibility = if (show) View.VISIBLE else View.GONE
+            txtUploadStatus.visibility = if (show) View.VISIBLE else View.GONE
+            btnSendDocuments.isEnabled = !show
+            btnUpload.isEnabled = !show
+            txtUpload.isEnabled = !show
+
+            if (show) {
+                btnSendDocuments.alpha = 0.5f
+                txtUploadStatus.text = "Fazendo upload de arquivos, aguarde, isso pode demorar alguns minutos..."
+            } else {
+                btnSendDocuments.alpha = 1.0f
+                txtUploadStatus.text = ""
+            }
+        }
+    }
+
     private fun openFilePicker() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             type = "*/*"
@@ -53,6 +91,7 @@ class UploadActivity: AppCompatActivity() {
         }
         startActivityForResult(intent, PICK_FILES_REQUEST_CODE)
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_FILES_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -68,36 +107,37 @@ class UploadActivity: AppCompatActivity() {
                 fileUris.add(data.data!!)
             }
 
-            // Prepare files for upload
             selectedFileParts = fileUris.mapNotNull { uri -> uriToFilePart(uri) }
+
+            // Update UI to show number of files selected
+            runOnUiThread {
+                txtUpload.text = "${selectedFileParts.size} arquivo(s) selecionado(s)"
+                btnSendDocuments.isEnabled = selectedFileParts.isNotEmpty()
+            }
         }
     }
+
     private fun uriToFilePart(uri: Uri): MultipartBody.Part? {
         val file = uriToFile(uri) ?: return null
         val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
-
         val requestBody = RequestBody.create(MediaType.parse(mimeType), file)
-        val originalFileName = getOriginalFileName(uri) // Use the updated method here
-        Log.d("UploadActivity", "Prepared file: ${file.name} with MIME type: $mimeType and original name: $originalFileName")
+        val originalFileName = getOriginalFileName(uri)
         return MultipartBody.Part.createFormData("files", originalFileName, requestBody)
     }
 
     private fun getOriginalFileName(uri: Uri): String {
-        var fileName = "file_${System.currentTimeMillis()}" // Default name if all else fails
-
-        // Query the file name from the content resolver
-        val cursor = contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val nameIndex = it.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+        var fileName = "file_${System.currentTimeMillis()}"
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
                 if (nameIndex != -1) {
-                    fileName = it.getString(nameIndex)
+                    fileName = cursor.getString(nameIndex)
                 }
             }
         }
-        Log.d("UploadActivity", "Original file name: $fileName")
         return fileName
     }
+
     private fun uriToFile(uri: Uri): File? {
         val inputStream = contentResolver.openInputStream(uri) ?: return null
         val file = File(cacheDir, uri.lastPathSegment ?: "tempFile")
@@ -113,33 +153,41 @@ class UploadActivity: AppCompatActivity() {
         }
         val userId = credentials!!.first.toString()
 
-
         if (selectedFileParts.isEmpty()) {
-            Toast.makeText(this, "No files selected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Nenhum Arquivo Selecionado", Toast.LENGTH_SHORT).show()
             return
         }
 
+        // Show loading state
+        showLoading(true)
+
         val api = retrofit.create(ArquivoApi::class.java)
-        // Make the upload call using Coroutines
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = api.upldoadArquivo(userId, selectedFileParts)
-                Log.d("UploadActivity", "Response: $response")
-                Log.d("UploadActivity", "Response Message: ${response.errorBody()?.string()}")
-                selectedFileParts.forEach { part ->
-                    val fileName = part.headers()?.get("Content-Disposition")?.split("filename=")?.getOrNull(1)?.replace("\"", "")
-                    Log.d("UploadActivity", "Uploading file: $fileName, Size: ${part.body().contentLength()} bytes")
-                }
-                if (response.isSuccessful) {
-                    runOnUiThread { Toast.makeText(this@UploadActivity, "Files uploaded successfully", Toast.LENGTH_SHORT).show() }
-                } else {
-                    runOnUiThread { Toast.makeText(this@UploadActivity, "Upload failed", Toast.LENGTH_SHORT).show() }
+                // Log upload start
+                Log.d("UploadActivity", "Starting upload of ${selectedFileParts.size} files")
+
+                val response = api.uploadArquivo(userId, selectedFileParts)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@UploadActivity, "Files uploaded successfully", Toast.LENGTH_SHORT).show()
+                        // Reset selection after successful upload
+                        selectedFileParts = listOf()
+                        txtUpload.text = "Selecione um arquivo para upload"
+                    } else {
+                        Toast.makeText(this@UploadActivity, "Upload failed: ${response.errorBody()?.string()}", Toast.LENGTH_LONG).show()
+                    }
                 }
             } catch (e: Exception) {
-                runOnUiThread { Toast.makeText(this@UploadActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show() }
+                Log.e("UploadActivity", "Upload error", e)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@UploadActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            } finally {
+                // Hide loading state
+                showLoading(false)
             }
         }
     }
-
-
 }
