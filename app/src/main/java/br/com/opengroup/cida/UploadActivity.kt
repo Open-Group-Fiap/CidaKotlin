@@ -31,6 +31,7 @@ class UploadActivity: AppCompatActivity() {
     private lateinit var txtUpload: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var txtUploadStatus: TextView
+    private lateinit var btnInsights: Button
 
     private val PICK_FILES_REQUEST_CODE = 100
     private var selectedFileParts: List<MultipartBody.Part> = listOf()
@@ -52,6 +53,7 @@ class UploadActivity: AppCompatActivity() {
         txtUpload = findViewById(R.id.txtUpload)
         progressBar = findViewById(R.id.progressBar)
         txtUploadStatus = findViewById(R.id.txtUploadStatus)
+        btnInsights = findViewById(R.id.btnInsights)
 
         // Initially hide loading elements
         progressBar.visibility = View.GONE
@@ -62,6 +64,7 @@ class UploadActivity: AppCompatActivity() {
         txtUpload.setOnClickListener { if (!isUploading) openFilePicker() }
         btnUpload.setOnClickListener { if (!isUploading) openFilePicker() }
         btnSendDocuments.setOnClickListener { if (!isUploading) sendFiles() }
+        btnInsights.setOnClickListener { startActivity(Intent(this, DashboardActivity::class.java)) }
     }
 
     private fun showLoading(show: Boolean) {
@@ -174,7 +177,7 @@ class UploadActivity: AppCompatActivity() {
                         Toast.makeText(this@UploadActivity, "Files uploaded successfully", Toast.LENGTH_SHORT).show()
                         // Reset selection after successful upload
                         selectedFileParts = listOf()
-                        txtUpload.text = "Selecione um arquivo para upload"
+                        txtUpload.text = "Escolha seu arquivo"
                     } else {
                         Toast.makeText(this@UploadActivity, "Upload failed: ${response.errorBody()?.string()}", Toast.LENGTH_LONG).show()
                     }
