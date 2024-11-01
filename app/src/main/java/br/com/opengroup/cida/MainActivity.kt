@@ -1,6 +1,6 @@
 package br.com.opengroup.cida
 
-import DatabaseHelper
+import LocalDatabaseHelper
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        credentials = DatabaseHelper(this).selectCredenciais()
+        credentials = LocalDatabaseHelper(this).selectCredenciais()
         if(credentials != null) {
             startActivity(Intent(this, UploadActivity::class.java))
         }

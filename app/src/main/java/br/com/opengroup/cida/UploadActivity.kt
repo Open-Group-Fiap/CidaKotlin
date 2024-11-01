@@ -1,6 +1,6 @@
 package br.com.opengroup.cida
 
-import DatabaseHelper
+import LocalDatabaseHelper
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -22,7 +22,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.Response
 import java.io.File
 
 class UploadActivity: AppCompatActivity() {
@@ -149,7 +148,7 @@ class UploadActivity: AppCompatActivity() {
     }
 
     private fun sendFiles() {
-        credentials = DatabaseHelper(this).selectCredenciais()
+        credentials = LocalDatabaseHelper(this).selectCredenciais()
         if (credentials == null) {
             Toast.makeText(this, "Credenciais não encontradas", Toast.LENGTH_SHORT).show()
             return

@@ -1,6 +1,6 @@
 package br.com.opengroup.cida
 
-import DatabaseHelper
+import LocalDatabaseHelper
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -43,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        credentials = DatabaseHelper(this).selectCredenciais()
+        credentials = LocalDatabaseHelper(this).selectCredenciais()
         if(credentials != null) {
             startActivity(Intent(this, UploadActivity::class.java))
         }
@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
                         Toast.makeText(this@LoginActivity, "Usuário logado com sucesso! Aguarde...", Toast.LENGTH_SHORT).show()
                         val usuarioResponseResponse = api.consultarUsuario(login.email)
                         val idUsuario = usuarioResponseResponse.body()!!.idUsuario
-                        DatabaseHelper(this@LoginActivity).updateCredenciais(idUsuario, login.email, login.senha)
+                        LocalDatabaseHelper(this@LoginActivity).updateCredenciais(idUsuario, login.email, login.senha)
                         startActivity(Intent(this@LoginActivity, UploadActivity::class.java))
                         finish()
                     } else {

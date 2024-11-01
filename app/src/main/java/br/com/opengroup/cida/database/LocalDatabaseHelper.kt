@@ -3,7 +3,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "Database", null, 1) {
+class LocalDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "Database", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
         val sqlCredenciais = "CREATE TABLE IF NOT EXISTS T_CREDENCIAIS(" +
                 "id_credencial INTEGER NOT NULL PRIMARY KEY," +

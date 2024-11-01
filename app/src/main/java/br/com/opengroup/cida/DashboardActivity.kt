@@ -1,11 +1,9 @@
 package br.com.opengroup.cida
 
-import DatabaseHelper
+import LocalDatabaseHelper
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import br.com.opengroup.cida.api.InsightApi
 import br.com.opengroup.cida.api.RetrofitHelper
-import br.com.opengroup.cida.model.Insight
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -93,7 +90,7 @@ class DashboardActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = retrofit.create(InsightApi::class.java)
-                    .getInsight(DatabaseHelper(this@DashboardActivity).selectCredenciais()?.second?.first.toString())
+                    .getInsight(LocalDatabaseHelper(this@DashboardActivity).selectCredenciais()?.second?.first.toString())
                 Log.d("DashboardActivity", "Insight: ${response.toString()}")
                 Log.d("DashboardActivity", "Insight response: ${response.body()}")
                 Log.d("DashboardActivity", "Response code: ${response.code()}")
