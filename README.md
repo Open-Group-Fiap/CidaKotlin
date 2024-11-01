@@ -52,7 +52,7 @@ Temos 6 telas, sendo elas:
 - **Dashboard:** Tela de dashboard, onde o usuário pode ver os insights gerados pela CIDA
 - **Usuário:** Tela de usuário, onde o usuário pode ver e editar seus dados, apagar sua conta e fazer logout
 
-Utilizamos o Retrofit para se comunicar com nossa api c# hosteada na azure, (Link do site)[https://cida.azurewebsites.net/], (Link do repo da api)[https://github.com/Open-Group-Fiap/CIDA-DotNet8-DevOps]
+Utilizamos o Retrofit para se comunicar com nossa api c# hosteada na azure, [Link do site](https://cida.azurewebsites.net/),[Link do repo da api](https://github.com/Open-Group-Fiap/CIDA-DotNet8-DevOps)
 
 Utilizamos o SQLite para salvar os dados do usuário localmente, para que ele não precise fazer login toda vez que abrir o app
 
