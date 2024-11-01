@@ -33,6 +33,7 @@ class UploadActivity: AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var txtUploadStatus: TextView
     private lateinit var btnInsights: Button
+    private lateinit var btnUser: Button
 
     private val PICK_FILES_REQUEST_CODE = 100
     private var selectedFileParts: List<MultipartBody.Part> = listOf()
@@ -55,6 +56,7 @@ class UploadActivity: AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         txtUploadStatus = findViewById(R.id.txtUploadStatus)
         btnInsights = findViewById(R.id.btnInsights)
+        btnUser = findViewById(R.id.btnUser)
 
         // Initially hide loading elements
         progressBar.visibility = View.GONE
@@ -66,6 +68,7 @@ class UploadActivity: AppCompatActivity() {
         btnUpload.setOnClickListener { if (!isUploading) openFilePicker() }
         btnSendDocuments.setOnClickListener { if (!isUploading) sendFiles() }
         btnInsights.setOnClickListener { startActivity(Intent(this, DashboardActivity::class.java)) }
+        btnUser.setOnClickListener { startActivity(Intent(this, UsuarioActivity::class.java)) }
     }
 
     private fun showLoading(show: Boolean) {

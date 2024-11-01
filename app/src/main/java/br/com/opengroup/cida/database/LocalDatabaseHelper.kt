@@ -2,6 +2,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
+import br.com.opengroup.cida.database.FirestoreLogger
 
 class LocalDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "Database", null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
@@ -32,6 +33,7 @@ class LocalDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "Databas
             Log.i("db_info", "Credenciais inseridas com sucesso")
         } catch (e: Exception) {
             e.printStackTrace()
+            FirestoreLogger.log("Erro ao inserir credenciais, ${e.message}", email)
             Log.i("db_info", "Erro ao inserir credenciais")
         }
     }
@@ -72,7 +74,22 @@ class LocalDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "Databas
             Log.i("db_info", "Credenciais atualizadas com sucesso")
         } catch (e: Exception) {
             e.printStackTrace()
+            FirestoreLogger.log("Erro ao atualizar credenciais, ${e.message}", selectCredenciais()?.second?.first!!)
             Log.i("db_info", "Erro ao atualizar credenciais")
+        }
+    }
+
+    fun removeCredentials() {
+        val db = writableDatabase
+        val credentials = selectCredenciais()
+        val sql = "DELETE FROM T_CREDENCIAIS;"
+        try {
+            db.execSQL(sql)
+            Log.i("db_info", "Credenciais removidas com sucesso")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            FirestoreLogger.log("Erro ao remover credenciais, ${e.message}", credentials?.second?.first!!)
+            Log.i("db_info", "Erro ao remover credenciais")
         }
     }
 }

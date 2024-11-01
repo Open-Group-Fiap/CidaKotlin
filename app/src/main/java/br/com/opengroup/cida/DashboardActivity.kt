@@ -112,6 +112,13 @@ class DashboardActivity : AppCompatActivity() {
                             updateEmptyState(insightAdapter.itemCount == 0)
                         }
                     }
+                    else {
+                        FirestoreLogger.log("Erro ao obter insights, ${response.message()}", LocalDatabaseHelper(this@DashboardActivity).selectCredenciais()?.second?.first.toString())
+                        withContext(Dispatchers.Main) {
+                            // Handle error
+                            updateEmptyState(insightAdapter.itemCount == 0)
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 FirestoreLogger.log("Erro ao obter insights, ${e.message}", LocalDatabaseHelper(this@DashboardActivity).selectCredenciais()?.second?.first.toString())

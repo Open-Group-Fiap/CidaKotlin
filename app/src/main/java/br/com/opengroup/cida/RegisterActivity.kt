@@ -73,11 +73,6 @@ class RegisterActivity : AppCompatActivity() {
             return true
         return false
     }
-    private fun getDate(): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSXXX")
-        val date = Date()
-        return dateFormat.format(date)
-    }
 
     private fun registerUser() {
         val api = retrofit.create(UsuarioAPI::class.java)
@@ -88,8 +83,6 @@ class RegisterActivity : AppCompatActivity() {
             tipoDocumento = 1,
             numDocumento = tilCNPJ.editText?.text.toString(),
             telefone = tilPhone.editText?.text.toString(),
-            // Date now
-            dataCriacao = getDate(),
             status = 0
         )
 
