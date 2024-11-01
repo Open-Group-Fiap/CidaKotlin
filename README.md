@@ -40,11 +40,22 @@ https://exame.com/pme/as-pmes-representam-27-do-pib-confira-dicas-para-ter-suces
 
 ## Aplicação
 
-Atualmente temos 5 telas na aplicação, a tela de login, a tela de registro, a tela de upload de arquivos, a tela de dashboard e a tela de entrada.
+### Nota Importante
+O servidor hosteado na azure tem um cold boot relativamente longo, então caso a aplicação não carregue de primeira, aguarde alguns segundos e tente novamente.
 
-Temos integração com 2 pontos de API, ambas hosteadas na azure, caso API esteja indisponível, segue o link para a documentação de como fazer o deploy da API.
-[API](https://github.com/Open-Group-Fiap/CIDA-DotNet8-DevOps/) *Connection String foi enviada junto na entrega*
+### Explicação da tecnologia
+Temos 6 telas, sendo elas:
+- **Home:** Tela inicial, com os botões para navegar para login e registro (Caso exista um login salvo localmente essa tela não é exibida)
+- **Login:** Tela de login, onde o usuário pode fazer login com um email e senha
+- **Registro:** Tela de registro, onde o usuário pode se registrar com os dados empresariais
+- **Upload:** Tela de upload, onde o usuário pode fazer upload de documentos para a CIDA processar
+- **Dashboard:** Tela de dashboard, onde o usuário pode ver os insights gerados pela CIDA
+- **Usuário:** Tela de usuário, onde o usuário pode ver e editar seus dados, apagar sua conta e fazer logout
 
-Os dois pontos de API são:
-- Registro de usuário
-- Login de usuário
+Utilizamos o Retrofit para se comunicar com nossa api c# hosteada na azure, (Link do site)[https://cida.azurewebsites.net/], (Link do repo da api)[https://github.com/Open-Group-Fiap/CIDA-DotNet8-DevOps]
+
+Utilizamos o SQLite para salvar os dados do usuário localmente, para que ele não precise fazer login toda vez que abrir o app
+
+Utilizamos o Firestore para loggar erros que acontecem no app, para que possamos corrigir eles mais facilmente
+
+

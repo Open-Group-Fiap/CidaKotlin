@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import br.com.opengroup.cida.api.RetrofitHelper
@@ -31,6 +32,7 @@ class UsuarioActivity : AppCompatActivity() {
     private lateinit var etUserPhone: EditText
     private lateinit var btnSave: Button
     private lateinit var btnLogout: Button
+    private lateinit var btnDelete: Button
     private lateinit var loadingContainer: CardView
     private lateinit var progressBar: ProgressBar
     private lateinit var txtLoadingStatus: TextView
@@ -49,6 +51,7 @@ class UsuarioActivity : AppCompatActivity() {
         etUserPhone = findViewById(R.id.etUserPhone)
         btnSave = findViewById(R.id.btnSave)
         btnLogout = findViewById(R.id.btnLogout)
+        btnDelete = findViewById(R.id.btnDelete)
         loadingContainer = findViewById(R.id.loadingContainer)
         progressBar = findViewById(R.id.progressBar)
         txtLoadingStatus = findViewById(R.id.txtLoadingStatus)
@@ -56,14 +59,18 @@ class UsuarioActivity : AppCompatActivity() {
 
         btnSave.setOnClickListener {
             if(!isLoading)
-            saveUserData()
+                saveUserData()
         }
 
         btnLogout.setOnClickListener {
             if(!isLoading)
-            logout()
+                logout()
+        }
+        btnDelete.setOnClickListener {
+            if (!isLoading) showDeleteConfirmationDialog()
         }
     }
+
     override fun onStart() {
         super.onStart()
         showLoading(true)
@@ -97,6 +104,47 @@ class UsuarioActivity : AppCompatActivity() {
             }
         }
     }
+    private fun showDeleteConfirmationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Confirmar exclusão")
+        builder.setMessage("Você tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.")
+        builder.setPositiveButton("Sim") { dialog, _ ->
+            dialog.dismiss()
+            deleteUser()
+        }
+        builder.setNegativeButton("Não") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.create().show()
+    }
+    private fun deleteUser() {
+        showLoading(true)
+        CoroutineScope(Dispatchers.IO).launch {
+            val usuarioAPI = retrofit.create(UsuarioAPI::class.java)
+            try {
+                val response = usuarioAPI.deletarUsuario(usuario.idUsuario.toString())
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        FirestoreLogger.log("Conta apagada com sucesso", credentials?.second?.first!!)
+                        Toast.makeText(this@UsuarioActivity, "Conta apagada com sucesso", Toast.LENGTH_SHORT).show()
+                        logout()
+                    } else {
+                        FirestoreLogger.log("Erro ao apagar conta, erro: ${response.message()}", credentials?.second?.first!!)
+                        Toast.makeText(this@UsuarioActivity, "Erro ao apagar conta", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    FirestoreLogger.log("Erro ao apagar conta, erro: ${e.message}", credentials?.second?.first!!)
+                    Toast.makeText(this@UsuarioActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            } finally {
+                withContext(Dispatchers.Main) {
+                    showLoading(false)
+                }
+            }
+        }
+    }
 
     private fun saveUserData() {
         showLoading(true)
@@ -120,16 +168,21 @@ class UsuarioActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val usuarioResponse: UsuarioResponse? = response.body()
+
                         if (usuarioResponse != null) {
                             LocalDatabaseHelper(this@UsuarioActivity).updateCredenciais(usuarioResponse.idUsuario, credentials?.second?.first!!, usuarioRequest.senha)
                         }
+
+                        FirestoreLogger.log("Dados de usuário atualizados com sucesso", credentials?.second?.first!!)
                         Toast.makeText(this@UsuarioActivity, "Dados de usuário atualizados com sucesso!", Toast.LENGTH_SHORT).show()
                     } else {
+                        FirestoreLogger.log("Erro ao atualizar dados, erro: ${response.message()}", credentials?.second?.first!!)
                         Toast.makeText(this@UsuarioActivity, "Erro ao atualizar dados", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    FirestoreLogger.log("Erro ao atualizar dados, erro: ${e.message}", credentials?.second?.first!!)
                     Toast.makeText(this@UsuarioActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             } finally {
