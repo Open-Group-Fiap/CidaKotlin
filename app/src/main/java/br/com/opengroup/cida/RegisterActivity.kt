@@ -3,10 +3,12 @@ package br.com.opengroup.cida
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import br.com.opengroup.cida.api.RetrofitHelper
 import br.com.opengroup.cida.api.UsuarioAPI
 import br.com.opengroup.cida.database.FirestoreLogger
@@ -29,6 +31,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var tilCNPJ: TextInputLayout
     private lateinit var tilPassword: TextInputLayout
     private lateinit var tilConfirmPassword: TextInputLayout
+    private lateinit var loadingContainer: CardView
 
     private val retrofit by lazy { RetrofitHelper.retrofit }
 
@@ -44,6 +47,7 @@ class RegisterActivity : AppCompatActivity() {
         tilCNPJ = findViewById(R.id.tilCNPJ)
         tilPassword = findViewById(R.id.tilPassword)
         tilConfirmPassword = findViewById(R.id.tilConfirmPassword)
+        loadingContainer = findViewById(R.id.loadingContainer)
 
         btnCreateAccount.setOnClickListener {
             if(validateInputs())
@@ -75,6 +79,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun registerUser() {
+        showLoading(true)
         val api = retrofit.create(UsuarioAPI::class.java)
         val usuarioRequest = UsuarioRequest(
             email = tilEmail.editText?.text.toString(),
@@ -114,6 +119,17 @@ class RegisterActivity : AppCompatActivity() {
                     Toast.makeText(this@RegisterActivity, "Erro de conexão: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+            finally {
+                showLoading(false)
+            }
+        }
+
+    }
+    private fun showLoading(show: Boolean) {
+        runOnUiThread {
+            loadingContainer.visibility = if (show) View.VISIBLE else View.GONE
+            btnCreateAccount.isEnabled = !show
+            btnCreateAccount.alpha = if (show) 0.5f else 1.0f
         }
     }
 }

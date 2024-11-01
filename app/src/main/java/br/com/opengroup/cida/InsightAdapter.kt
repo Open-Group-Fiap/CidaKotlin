@@ -44,8 +44,12 @@ class InsightAdapter : RecyclerView.Adapter<InsightAdapter.InsightViewHolder>() 
         fun bind(insight: Insight) {
             tvInsightId.text = "Insight #${insight.idInsight}"
             tvDate.text = insight.dataGeracao
-            // Render markdown text
-            markwon.setMarkdown(tvDescription, insight.descricao)
+            val description = if (insight.descricao.contains("InternalServerError")) {
+                "Ops, parece que tivemos algum erro gerando esse insight, por favor, tente gerar novamente"
+            } else {
+                insight.descricao
+            }
+            markwon.setMarkdown(tvDescription, description)
         }
     }
 }
