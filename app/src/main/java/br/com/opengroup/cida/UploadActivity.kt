@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.opengroup.cida.api.ArquivoApi
 import br.com.opengroup.cida.api.RetrofitHelper
+import br.com.opengroup.cida.database.FirestoreLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 class UploadActivity: AppCompatActivity() {
     private lateinit var btnSendDocuments: Button
@@ -182,6 +184,7 @@ class UploadActivity: AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
+                FirestoreLogger.log("Erro ao tentar fazer upload, error: ${e.message}", credentials?.second?.first!!)
                 Log.e("UploadActivity", "Upload error", e)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@UploadActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()

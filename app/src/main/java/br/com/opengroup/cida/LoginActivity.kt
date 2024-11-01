@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import br.com.opengroup.cida.api.RetrofitHelper
 import br.com.opengroup.cida.api.UsuarioAPI
+import br.com.opengroup.cida.database.FirestoreLogger
 import br.com.opengroup.cida.model.Login
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
@@ -83,6 +84,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
+                FirestoreLogger.log("Erro ao logar usuário ${tilEmail.editText?.text.toString()}", tilEmail.editText?.text.toString())
                 withContext(Dispatchers.Main) {
                     Log.e("LoginActivityLogin", "Erro de conexão: ${e.message}")
                     Toast.makeText(this@LoginActivity, "Erro de conexão: ${e.message}", Toast.LENGTH_SHORT).show()

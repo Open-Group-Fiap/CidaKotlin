@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.opengroup.cida.api.BootApi
 import br.com.opengroup.cida.api.RetrofitHelper
+import br.com.opengroup.cida.database.FirestoreLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        credentials = LocalDatabaseHelper(this).selectCredenciais()
         btnCreateAccount = findViewById(R.id.btnCreateAccount)
         tvLogin = findViewById(R.id.tvLogin)
 
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
                         break
                     }
                 } catch (e: Exception) {
+                    FirestoreLogger.log("Erro de server não inicializado, error: ${e.message}", credentials?.second?.first ?: "User sem login")
                     Toast.makeText(
                         this@MainActivity,
                         "Servidor ainda não está disponível, aguarde um pouco!",
@@ -49,7 +51,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        credentials = LocalDatabaseHelper(this).selectCredenciais()
         if(credentials != null) {
             startActivity(Intent(this, UploadActivity::class.java))
         }

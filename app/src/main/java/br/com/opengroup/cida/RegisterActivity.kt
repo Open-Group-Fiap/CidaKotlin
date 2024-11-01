@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.opengroup.cida.api.RetrofitHelper
 import br.com.opengroup.cida.api.UsuarioAPI
+import br.com.opengroup.cida.database.FirestoreLogger
 import br.com.opengroup.cida.model.UsuarioRequest
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
@@ -102,6 +103,7 @@ class RegisterActivity : AppCompatActivity() {
                         startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
                         finish()
                     } else {
+                        FirestoreLogger.log("Erro ao cadastrar usuário, erro: ${response.errorBody()!!.string()}", tilEmail.editText?.text.toString())
                         val error = response.errorBody()!!.string()
                         Log.e("RegisterActivityError", error)
                         Log.d("RegisterActivityError", Gson().toJson(usuarioRequest))
@@ -110,6 +112,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    FirestoreLogger.log("Erro de conexão, error: ${e.message}", tilEmail.editText?.text.toString())
                     Log.e("RegisterActivityError", e.message.toString())
                     if (e.message.toString().contains("timeout")) {
                         Toast.makeText(this@RegisterActivity, "Cold boot do servidor, tente novamente", Toast.LENGTH_SHORT).show()

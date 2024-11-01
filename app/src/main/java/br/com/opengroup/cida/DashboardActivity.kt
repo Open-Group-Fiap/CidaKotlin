@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import br.com.opengroup.cida.api.InsightApi
 import br.com.opengroup.cida.api.RetrofitHelper
+import br.com.opengroup.cida.database.FirestoreLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -113,6 +114,7 @@ class DashboardActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
+                FirestoreLogger.log("Erro ao obter insights, ${e.message}", LocalDatabaseHelper(this@DashboardActivity).selectCredenciais()?.second?.first.toString())
                 withContext(Dispatchers.Main) {
                     // Handle error
                     updateEmptyState(insightAdapter.itemCount == 0)
