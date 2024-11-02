@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +24,9 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var tvEmptyState: TextView
     private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var toolbar: Toolbar
     private lateinit var insightAdapter: InsightAdapter
+
 
     private val retrofit by lazy { RetrofitHelper.retrofit }
     private var currentPage = 1
@@ -45,6 +48,12 @@ class DashboardActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         tvEmptyState = findViewById(R.id.tvEmptyState)
         swipeRefresh = findViewById(R.id.swipeRefresh)
+        toolbar = findViewById(R.id.toolbar)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun setupRecyclerView() {

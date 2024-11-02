@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -36,6 +37,7 @@ class UsuarioActivity : AppCompatActivity() {
     private lateinit var loadingContainer: CardView
     private lateinit var progressBar: ProgressBar
     private lateinit var txtLoadingStatus: TextView
+    private lateinit var toolbar: Toolbar
     private lateinit var usuario: UsuarioResponse
     private var isLoading = false
 
@@ -55,7 +57,12 @@ class UsuarioActivity : AppCompatActivity() {
         loadingContainer = findViewById(R.id.loadingContainer)
         progressBar = findViewById(R.id.progressBar)
         txtLoadingStatus = findViewById(R.id.txtLoadingStatus)
+        toolbar = findViewById(R.id.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
 
         btnSave.setOnClickListener {
             if(!isLoading)

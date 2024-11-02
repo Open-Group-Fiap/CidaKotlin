@@ -12,6 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/white"
         android:elevation="4dp"
+        app:navigationIcon="@drawable/baseline_arrow_back_ios_24"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView

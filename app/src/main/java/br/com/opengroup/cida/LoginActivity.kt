@@ -82,7 +82,9 @@ class LoginActivity : AppCompatActivity() {
                         val usuarioResponseResponse = api.consultarUsuario(login.email)
                         val idUsuario = usuarioResponseResponse.body()!!.idUsuario
                         LocalDatabaseHelper(this@LoginActivity).updateCredenciais(idUsuario, login.email, login.senha)
-                        startActivity(Intent(this@LoginActivity, UploadActivity::class.java))
+                        val intent = Intent(this@LoginActivity, UploadActivity::class.java)
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
                         finish()
                     } else {
                         Log.e("LoginActivityLogin", "Erro ao logar usuário: ${response.message()}")

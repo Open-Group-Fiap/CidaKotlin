@@ -14,6 +14,7 @@
         android:layout_height="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:navigationIcon="@drawable/baseline_arrow_back_ios_24"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -28,6 +29,7 @@
             tools:layout_editor_absoluteY="18dp" />
 
     </androidx.appcompat.widget.Toolbar>
+
 
     <EditText
         android:id="@+id/etUserName"
